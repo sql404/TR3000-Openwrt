@@ -43,7 +43,7 @@ jobs:
     - name: Clone source code
       run: |
         git clone -b $REPO_BRANCH --single-branch $REPO_URL openwrt
-        cd openwrt
+        cd immortalwrt-tr3000-112m
         useVersionInfo=$(git show -s --date=short --format="date: %cd<br/>commit: %s<br/>commit hash: %H")
         echo "useVersionInfo=$useVersionInfo" >> $GITHUB_ENV
         echo "DATE=$(date "+%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
@@ -51,12 +51,12 @@ jobs:
         
     - name: Load custom feeds
       run: |
-        cd openwrt
+        cd immortalwrt-tr3000-112m
         git clone https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon
         
     - name: Update & Install feeds
       run: |
-       cd openwrt
+       cd immortalwrt-tr3000-112m
        ./scripts/feeds update -a
        rm -rf feeds/packages/lang/golang
        git clone https://github.com/kenzok8/golang feeds/packages/lang/golang
@@ -70,14 +70,14 @@ jobs:
 
     - name: Download package
       run: |
-        cd openwrt
+        cd immortalwrt-tr3000-112m
         make defconfig
         make download -j8
         find dl -size -1024c -exec rm -f {} \;
 
     - name: Compile the firmware
       run: |
-        cd openwrt
+        cd immortalwrt-tr3000-112m
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 V=s
         echo "======================="
@@ -94,7 +94,7 @@ jobs:
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
-        cd openwrt/bin/targets/*/*
+        cd immortalwrt-tr3000-112m/bin/targets/*/*
         rm -rf packages mt798*.bin *.manifest *.buildinfo *kernel.bin version.buildinfo profiles.json
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
